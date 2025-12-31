@@ -1,0 +1,55 @@
+@startuml components
+!includeurl https://raw.githubusercontent.com/proveo-ca/identity/refs/heads/main/proveo.iuml
+
+title Spec Build Tool - Components (Shell)
+
+package "Shell Distribution" {
+  [install.sh] as INST
+  [spec] as RUN
+}
+
+package "Docker Container" {
+  [proveo/spec:latest] as IMG
+
+  package "Pre-installed" {
+    [Java Runtime] as JRE
+    [PlantUML] as PU
+    [Graphviz] as GV
+  }
+
+  package "Scripts" {
+    [entrypoint.sh\n(internal-build.sh)] as EP
+    [File Scanner] as FS
+    [SVG Generator] as SG
+  }
+}
+
+package "Host File System" {
+  [.puml files] as PUML
+  [.svg files] as SVG
+  [/usr/local/bin] as BIN
+}
+
+package "Excluded Folders" {
+  [.git] as GIT
+  [dist] as DIST
+  [build] as BUILD
+}
+
+INST --> IMG : docker build -t
+INST --> RUN : copies (spec-build.sh -> spec)
+INST --> BIN : copies to
+RUN --> IMG : docker run --rm -v <target>:/data
+IMG --> EP : ENTRYPOINT
+EP --> FS : scans /data
+FS --> PUML : discovers
+FS --o GIT : excludes
+FS --o DIST : excludes
+FS --o BUILD : excludes
+EP --> SG : generates SVGs
+SG --> PU : invokes (java -jar plantuml.jar)
+PU --> JRE : runs on
+PU --> GV : uses
+SG --> SVG : writes next to .puml
+
+@enduml

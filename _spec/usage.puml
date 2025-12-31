@@ -1,0 +1,47 @@
+@startuml usage
+!includeurl https://raw.githubusercontent.com/proveo-ca/identity/refs/heads/main/proveo.iuml
+title Spec Build Tool - Usage Flow (Shell)
+
+actor Developer as User
+participant "install.sh" as Inst
+participant "spec\n(spec-build.sh)" as Script
+participant "Docker" as Docker
+participant "proveo/spec:latest\ncontainer" as Container
+participant "entrypoint.sh\n(internal-build.sh)" as Entry
+database "Host File System" as FS
+
+== Installation ==
+User -> Inst : ./install.sh
+Inst -> Docker : docker build -t proveo/spec:latest .
+Inst -> FS : Copy spec-build.sh to /usr/local/bin/spec
+Inst -> FS : chmod +x /usr/local/bin/spec
+Inst -> User : All set (run 'spec --help')
+
+== Build Diagrams (Current Folder) ==
+User -> Script : spec
+Script -> Script : target_dir = $(pwd)
+Script -> Script : Check Docker available (docker + daemon)
+alt Docker missing / daemon not running
+  Script -> User : Error: docker required
+end
+Script -> Docker : docker run --rm -v $(pwd):/data proveo/spec:latest
+Docker -> Container : Start container
+note right: Container includes\nJava, PlantUML (jar), Graphviz
+Container -> FS : Mount folder as /data
+Container -> Entry : ENTRYPOINT /usr/local/bin/entrypoint.sh
+Entry -> Container : Find *.puml in /data\nexcluding .git, dist, build
+loop for each .puml file
+  Entry -> Container : java -jar /opt/plantuml.jar -tsvg <file>.puml
+  Entry -> FS : Write <file>.svg
+end
+Entry -> Docker : Exit
+Docker -> Script : Return status
+Script -> User : Report success/failure
+
+== Build Diagrams (Custom Folder) ==
+User -> Script : spec ./docs
+Script -> Script : target_dir = "$(cd ./docs && pwd)"
+Script -> Docker : docker run --rm -v $(pwd)/docs:/data proveo/spec:latest
+note right: Mounts specific folder
+
+@enduml
