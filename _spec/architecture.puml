@@ -1,0 +1,36 @@
+@startuml architecture
+!include https://raw.githubusercontent.com/proveo-ca/identity/main/proveo.puml
+
+title spec@proveo — skill-based diagram authoring
+
+actor     "Developer"                          as DEV
+
+folder "spec skill" as SKILL {
+  component "SKILL.md + references"             as DOC    <<app>>
+  component "fetch-themes.sh"                   as FETCH  <<app>>
+  database  "assets/themes"                     as ASSETS <<db>>
+}
+
+component "Coding Agent"                        as AGENT  <<app>>
+cloud     "proveo-ca/identity"                 as IDENT  <<cloud>>
+
+folder "project _spec/" as SPEC {
+  component "*.puml / *.mmd / *.vega.json"      as DIAGS  <<app>>
+  database  "_spec/themes/"                     as THEMES <<db>>
+}
+
+component "Renderers\nplantuml / mmdc / vl2svg" as REND   <<async>>
+
+DEV   ARROW_MAIN     AGENT  : author a diagram
+AGENT ARROW_MAIN     DOC    : read conventions
+AGENT ARROW_MAIN     FETCH  : vendor themes
+FETCH ARROW_OPTIONAL ASSETS : bundled copy
+FETCH ARROW_CLOUD    IDENT  : "--remote (latest)"
+FETCH ARROW_MAIN     THEMES : write mermaid + vega
+DIAGS ARROW_CLOUD    IDENT  : "PlantUML !include"
+DIAGS ARROW_OPTIONAL THEMES : mermaid / vega config
+AGENT ARROW_MAIN     DIAGS  : write + SPEC: ref
+AGENT ARROW_QUEUE    REND   : render / validate
+REND  ARROW_MAIN     DIAGS  : .svg
+
+@enduml

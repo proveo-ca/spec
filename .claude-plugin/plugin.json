@@ -1,0 +1,11 @@
+{
+  "name": "spec",
+  "description": "Proveo spec authoring conventions: PlantUML, Mermaid, and Vega-Lite diagrams themed with the proveo identity palette, plus the _spec/ + SPEC: reference lifecycle and native rendering.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Proveo",
+    "email": "roberto@pluvo.io"
+  },
+  "homepage": "https://github.com/proveo-ca/spec",
+  "license": "MIT"
+}

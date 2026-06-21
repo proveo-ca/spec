@@ -1,0 +1,48 @@
+# spec@proveo
+
+> Conventions and an installable Claude Code skill for authoring the diagrams that document a proveo
+> codebase. Three formats — PlantUML (`.puml`), Mermaid (`.mmd`), and Vega-Lite (`.vega.json`) — share
+> one identity (the proveo palette and six semantic roles). Diagrams live under a project's `_spec/`
+> directory and are linked from the code they describe via `SPEC:` comments.
+
+Modern coding agents render diagrams themselves, so this project is a skill + conventions, not a
+renderer container. The skill teaches the agent the conventions, how to deliver the identity theme
+(hybrid: remote PlantUML include + vendored Mermaid/Vega themes), and how to install the renderers and
+validate/render natively.
+
+## Skill
+
+- [SKILL.md](skills/spec/SKILL.md): entry point — roles/palette, hybrid theme delivery, authoring workflow, the SPEC reference lifecycle.
+- [plugin.json](.claude-plugin/plugin.json): Claude Code plugin manifest.
+- [marketplace.json](.claude-plugin/marketplace.json): single-plugin marketplace manifest. Install via the cross-agent `skills` CLI (`npx skills add proveo-ca/spec`) or, in Claude Code, `/plugin marketplace add proveo-ca/spec` then `/plugin install spec@proveo`.
+
+## Publishing
+
+- [PUBLISHING.md](PUBLISHING.md): how to distribute the skill across skills.sh, Claude Code plugins, OpenCode, and cecli — and the prerequisite of hosting the repo publicly at `proveo-ca/spec`.
+
+## References
+
+- [PlantUML conventions](skills/spec/references/plantuml.md): role stereotypes (`<<app>>`…`<<error>>`), arrow macros (`ARROW_*`), Creole text rules, layout hints, validation gotchas.
+- [Mermaid conventions](skills/spec/references/mermaid.md): the `%%{init}%%` theme block and the six role classes.
+- [Vega-Lite conventions](skills/spec/references/vega-lite.md): config-merge theming and the palette color ranges.
+- [Rendering](skills/spec/references/rendering.md): install + validate + render commands for `plantuml`, `mmdc`, and `vl2svg`.
+
+## Themes (vendored)
+
+- [_spec/themes/proveo.mermaid](_spec/themes/proveo.mermaid)
+- [_spec/themes/proveo.vega.json](_spec/themes/proveo.vega.json)
+- [_spec/themes/proveo-dark.vega.json](_spec/themes/proveo-dark.vega.json)
+- [fetch-themes.sh](skills/spec/scripts/fetch-themes.sh): vendors the Mermaid/Vega themes into a project's `_spec/themes/`.
+
+## Examples (dogfood, all three formats on the current theme)
+
+- [_spec/architecture.puml](_spec/architecture.puml): PlantUML on the new stereotype/arrow API.
+- [_spec/example.mmd](_spec/example.mmd): Mermaid with the proveo `%%{init}%%` block and role classes.
+- [_spec/example.vega.json](_spec/example.vega.json): Vega-Lite bar chart with the proveo config inlined.
+
+## Identity (upstream source of truth)
+
+- PlantUML theme: https://raw.githubusercontent.com/proveo-ca/identity/main/proveo.puml (dark: proveo-dark.puml)
+- Mermaid theme: https://raw.githubusercontent.com/proveo-ca/identity/main/proveo.mermaid
+- Vega-Lite theme: https://raw.githubusercontent.com/proveo-ca/identity/main/proveo.vega.json (dark: proveo-dark.vega.json)
+- Identity repo: https://github.com/proveo-ca/identity

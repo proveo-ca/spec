@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "proveo",
+  "metadata": {
+    "description": "Proveo plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "owner": {
+    "name": "Proveo",
+    "email": "roberto@pluvo.io"
+  },
+  "plugins": [
+    {
+      "name": "spec",
+      "source": "./",
+      "description": "Proveo spec authoring conventions: themed PlantUML/Mermaid/Vega-Lite diagrams, the _spec/ + SPEC: lifecycle, and native rendering.",
+      "category": "documentation"
+    }
+  ]
+}
