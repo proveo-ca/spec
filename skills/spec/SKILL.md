@@ -8,8 +8,9 @@ description: >-
   conventions, the proveo identity color palette/theme, role stereotypes, semantic arrows,
   or how to validate and render diagrams. Covers hybrid theme delivery (remote PlantUML
   include + vendored Mermaid/Vega themes in `_spec/themes/`), the SPEC reference lifecycle,
-  and native rendering with `plantuml`, `mmdc`, and `vl2svg`.
-version: 1.0.0
+  how it composes with the `spec-keeper` subagent (`' covers:` headers and
+  `_spec/.spec-index.json`), and native rendering with `plantuml`, `mmdc`, and `vl2svg`.
+version: 1.1.0
 license: MIT
 ---
 
@@ -82,7 +83,7 @@ Then:
 2. **Apply the theme** per the hybrid rules above.
 3. **Tag nodes by role** (`<<app>>` / `:::app` / category) and **choose arrows by intent**, not decoration.
 4. **Name things explicitly** — `apps/api Session Routes`, not `Backend`. Prefer current-state truth; keep future direction in notes.
-5. **Reference the diagram from code** — every new `.puml` MUST be linked from at least one source file (see SPEC lifecycle below). Mermaid/Vega that render inline in docs are exempt.
+5. **Reference the diagram from code** — every new `.puml` MUST be linked from at least one source file (see SPEC lifecycle below; optional where the `spec-keeper` subagent owns coverage). Mermaid/Vega that render inline in docs are exempt.
 6. **Validate and render** — see `references/rendering.md`. For PlantUML always run `plantuml -checkonly` before committing.
 
 ### PlantUML quick form
@@ -126,6 +127,25 @@ Source files link to their spec on a single top-line comment; multiple diagrams 
 - **Only delete a `.puml`** when the whole feature is gone. If a feature was reimplemented on different tech, mark the diagram `OUTDATED` rather than deleting it.
 - **Refactor moves logic** → move the `SPEC:` comment and update the diagram if the architecture changed.
 - `_spec/_refactors/` holds frozen historical snapshots — exempt from referencing, and don't lint/validate them against current code.
+
+### Composing with the `spec-keeper` subagent
+
+The rules above are the default and stand on their own — in a repo without the proveo harness
+they are the whole mechanism, and the main agent maintains them. When a repo *also* runs the
+`spec-keeper` subagent, that agent's `edit` permission is scoped to `_spec/`, so it can read
+`SPEC:` comments but never move or repair them. Coverage is therefore mirrored spec-side:
+
+| Layer | Written by | Purpose |
+| --- | --- | --- |
+| `SPEC:` comment in source | whoever touches the code | authoring affordance — record the link at the moment you know it |
+| `' covers:` globs in the `.puml` header | `spec-keeper` | the edge it owns; derived from the diff, enriched by any comments it finds |
+| `_spec/.spec-index.json` | `spec-keeper` (coverage) · drift guard (fingerprints) | machine-readable projection the guard checks |
+
+With both in play the `SPEC:` comment becomes **optional** — attach one where it helps a
+reader jump from code to diagram, skip it where it doesn't. `spec-keeper` owns coverage
+completeness either way and never asks for a comment to be added or removed. What it *can't*
+do is fix one: a comment citing a spec that no longer exists gets reported, and the repair
+stays with whoever owns that source file.
 
 ## Out of the box
 
