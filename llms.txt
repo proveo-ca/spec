@@ -3,7 +3,8 @@
 > Conventions and an installable Claude Code skill for authoring the diagrams that document a proveo
 > codebase. Three formats — PlantUML (`.puml`), Mermaid (`.mmd`), and Vega-Lite (`.vega.json`) — share
 > one identity (the proveo palette and six semantic roles). Diagrams live under a project's `_spec/`
-> directory and are linked from the code they describe via `SPEC:` comments.
+> directory, linked to the code they describe by `SPEC:` comments in source, or by `' covers:` globs in
+> the diagram header where the `spec-keeper` subagent owns coverage.
 
 Modern coding agents render diagrams themselves, so this project is a skill + conventions, not a
 renderer container. The skill teaches the agent the conventions, how to deliver the identity theme
@@ -12,7 +13,7 @@ validate/render natively.
 
 ## Skill
 
-- [SKILL.md](skills/spec/SKILL.md): entry point — roles/palette, hybrid theme delivery, authoring workflow, the SPEC reference lifecycle.
+- [SKILL.md](skills/spec/SKILL.md): entry point — roles/palette, hybrid theme delivery, authoring workflow, the SPEC reference lifecycle, and how it composes with the `spec-keeper` subagent (`' covers:` headers, `_spec/.spec-index.json`).
 - [plugin.json](.claude-plugin/plugin.json): Claude Code plugin manifest.
 - [marketplace.json](.claude-plugin/marketplace.json): single-plugin marketplace manifest. Install via the cross-agent `skills` CLI (`npx skills add proveo-ca/spec`) or, in Claude Code, `/plugin marketplace add proveo-ca/spec` then `/plugin install spec@proveo`.
 
