@@ -151,6 +151,11 @@ stays with whoever owns that source file.
 
 Render and validate locally:
 
+`-checkonly` is the gate before committing and writes nothing. Whether a *render* belongs in
+the tree is the consuming repo's call, declared in its `.gitignore` — `proveo/spec` commits
+`_spec/**/*.svg` beside the source, `proveo/sandbox` ignores renders. Check, then render; never
+leave one a repo does not want (`-o <dir>` sends output elsewhere).
+
 - PlantUML — `brew install plantuml`; `plantuml -checkonly f.puml`; `plantuml -tsvg f.puml`.
 - Mermaid — `npm i -g @mermaid-js/mermaid-cli`; `mmdc -i f.mmd -o f.svg`.
 - Vega-Lite — `npm i -g vega-cli vega-lite`; `vl2svg f.vega.json f.svg`.

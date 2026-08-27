@@ -3,6 +3,16 @@
 Install the renderer, apply the theme (hybrid: PlantUML remote, Mermaid/Vega vendored), then
 validate and render. Commands are macOS-first (Homebrew) with Linux notes.
 
+## Contents
+
+- **PlantUML (`.puml`)** — install (macOS + Linux), remote theme include, `-checkonly` validation, the
+  batch-validate loop, and rendering: whether the consuming repo commits or gitignores the output
+- **Mermaid (`.mmd`)** — renders inline, so the CLI is optional; `mmdc` install, the vendored
+  `%%{init}%%` theme, and the headless-Chromium / `puppeteer.json` notes
+- **Vega-Lite (`.vega.json`)** — `vega-cli` install, the vendored `config` theme, and the node-canvas
+  native libraries PNG/PDF need (SVG does not)
+- **Summary** — one table: install, validate, render and theme delivery per format
+
 ## PlantUML (`.puml`)
 
 PlantUML has **no native renderer anywhere** (GitHub/IDEs won't draw it), so it must be rendered
@@ -39,11 +49,22 @@ for f in _spec/**/*.puml; do
 done
 ```
 
-Render:
+Render — **and check first whether the consuming repo wants the output committed.**
+`-tsvg`/`-tpng` write next to the source by default, and both answers are live in proveo:
+
+- **Committed** — `proveo/spec` version-controls `_spec/**/*.svg` beside its source on purpose
+  and says so in its `.gitignore` ("Do not ignore \*.svg"). Render into the tree.
+- **Ignored** — `proveo/sandbox` gitignores `_spec/**/*.svg` and `*.png`, treating a checked-in
+  render as an artifact that goes stale the moment its `.puml` changes. Render to scratch.
+
+Read the repo's `.gitignore` before rendering into it, and never leave behind a render the repo
+does not want. `-checkonly` is the gate that holds either way: it validates and writes nothing.
 
 ```bash
-plantuml -tsvg path/to/file.puml           # SVG next to the source (preferred, version-controlled)
-plantuml -tpng -Sdpi=160 path/to/file.puml # crisp PNG for docs
+plantuml -checkonly path/to/file.puml                    # validate; no output file
+plantuml -tsvg path/to/file.puml                         # render beside the source
+plantuml -tsvg -o /tmp/puml path/to/file.puml            # render to scratch instead
+plantuml -tpng -Sdpi=160 path/to/file.puml               # crisp PNG for docs
 ```
 
 Remote includes require network access at render time — the first render fetches `proveo.puml`.
@@ -117,6 +138,6 @@ vl2png path/to/chart.vega.json path/to/chart.png    # needs node-canvas native l
 
 | Format | Install | Validate | Render | Theme delivery |
 | --- | --- | --- | --- | --- |
-| PlantUML | `brew install plantuml` | `plantuml -checkonly f.puml` | `plantuml -tsvg f.puml` | remote `!include` |
+| PlantUML | `brew install plantuml` | `plantuml -checkonly f.puml` | `plantuml -tsvg f.puml` (`-o <dir>` where renders are ignored) | remote `!include` |
 | Mermaid | `npm i -g @mermaid-js/mermaid-cli` | (renders inline; no checker) | `mmdc -i f.mmd -o f.svg` | vendored `%%{init}%%` |
 | Vega-Lite | `npm i -g vega-cli vega-lite` | (JSON schema) | `vl2svg f.vega.json f.svg` | vendored `config` |

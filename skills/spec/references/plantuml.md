@@ -4,6 +4,20 @@ PlantUML is the default spec format: architecture, component, deployment, sequen
 diagrams. Specs optimize for **architectural communication**, **current-state accuracy**, **visual
 consistency**, and **separation of critical vs secondary paths**.
 
+## Contents
+
+- **Theme include** — the remote `!include`, and the dark-canvas variant
+- **Roles via stereotypes** — the six roles, their colors, and which PlantUML keyword pairs with each
+- **Arrows — intent by macro** — `ARROW_MAIN` / `OPTIONAL` / `QUEUE` / `CLOUD` / `ERROR`, and why style carries intent as well as color
+- **Label macros** — `errorLabel()`, `successLabel()`, `dbLabel()`
+- **Text formatting (Creole)** — the supported markup, single quotes for string literals, and what to wrap in `""…""`
+- **Naming** — explicit component names over generic boxes
+- **Current state vs future direction** — where future intent belongs
+- **Historical diagrams** — how `_spec/_refactors/` is exempt
+- **Layout hints** — hidden arrows for spacing, and how to mark the block
+- **Validation gotchas** — the `-checkonly` parser errors that actually come up, and the fix for each
+- **Rule of thumb** — the one question a diagram should answer
+
 ## Theme include
 
 Pull the identity theme remotely — it's the single source of truth for color across every proveo
